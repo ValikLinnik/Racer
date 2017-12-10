@@ -1,0 +1,6 @@
+[submodule "Assets/Scripts/CommonManagers"]
+	path = Assets/Scripts/CommonManagers
+	url = https://github.com/ValikLinnik/CommonManagers.git
+[submodule "Assets/Scripts/Extension"]
+	path = Assets/Scripts/Extension
+	url = https://github.com/ValikLinnik/Extension.git
