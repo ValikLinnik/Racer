@@ -1102,9 +1102,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _timer: {fileID: 406815028}
   _levelConfig:
-    _timeToReach3Stars: 40
-    _timeToReach2Stars: 50
-    _timeToReach1Stars: 60
+    _timeToReach3Stars: 70
+    _timeToReach2Stars: 80
+    _timeToReach1Stars: 90
 --- !u!114 &406815027
 MonoBehaviour:
   m_ObjectHideFlags: 0
