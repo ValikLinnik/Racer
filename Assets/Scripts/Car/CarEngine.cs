@@ -18,6 +18,9 @@ public class CarEngine : InjectorBase<CarEngine>, IDisposable
     [SerializeField, Range(0, 300)]
     public float _maxSpeed = 190;
 
+    [SerializeField, Range(0, 1000), Tooltip("Max torque")]
+    private float _maxTorque = 300;
+
     [SerializeField]
     private Transform _centerOfMass;
 
@@ -39,6 +42,12 @@ public class CarEngine : InjectorBase<CarEngine>, IDisposable
     [SerializeField]
     private bool _isFourWheelDrive;
 
+    [SerializeField]
+    private AudioClip _engineDefault;
+
+    [SerializeField]
+    private AudioClip _onSpeedUp;
+
     #endregion
 
     #region PRIVATE FIELDS
@@ -50,8 +59,21 @@ public class CarEngine : InjectorBase<CarEngine>, IDisposable
     private float _timeEventDriveWasPressed = -1;
     private EngineGear _currentGear = EngineGear.N;
     private bool _isBreaking;
-    private float _maxTorque = 300;
     private float _brakingTorque = 500;
+    private AudioSource _engineSounSource;
+
+    private AudioSource _engineSounSourceProp
+    {
+        get
+        {
+            if (!_engineSounSource)
+            {
+                _engineSounSource = GetComponent<AudioSource>();
+            }
+
+            return _engineSounSource;
+        }
+    }
 
     #endregion
 
@@ -98,6 +120,7 @@ public class CarEngine : InjectorBase<CarEngine>, IDisposable
             _timeDrivePressed = 0;
             _timeEventDriveWasPressed = Time.time;
             _currentGear = backward ? EngineGear.R : EngineGear.D;
+            OnSpeedUpStart();
             return;
         }
 
@@ -115,6 +138,7 @@ public class CarEngine : InjectorBase<CarEngine>, IDisposable
         {
             _timeDrivePressed = -1;
             _timeEventDriveWasPressed = -1;
+            OnSpeedUpEnd();
         }
     }
 
@@ -123,16 +147,33 @@ public class CarEngine : InjectorBase<CarEngine>, IDisposable
         CarMovementHandler();
     }
 
-//    private void OnGUI()
-//    {
-//        GUI.Button(new Rect(10, 10, 100, 50), _currentSpeed.ToString("F"));
-//        GUI.Button(new Rect(10, 60, 100, 50), _torque.ToString("F"));
-//        GUI.Button(new Rect(10, 110, 100, 50), _currentGear.ToString());
-//    }
+    private void OnGUI()
+    {
+        GUI.Button(new Rect(10, 10, 100, 50), _currentSpeed.ToString("F"));
+        GUI.Button(new Rect(10, 60, 100, 50), _torque.ToString("F"));
+        GUI.Button(new Rect(10, 110, 100, 50), _currentGear.ToString());
+    }
 
     #endregion
 
     #region PRIVATE METHODS
+
+    private void OnSpeedUpStart()
+    {
+        PlayIfNotPlaying(_engineSounSourceProp, _onSpeedUp);
+    }
+
+    private void OnSpeedUpEnd()
+    {
+        PlayIfNotPlaying(_engineSounSourceProp, _engineDefault);
+    }
+
+    private void PlayIfNotPlaying(AudioSource source, AudioClip clip)
+    {
+        if(!source || (source.clip == clip && source.isPlaying)) return;
+        source.clip = clip;
+        source.Play();
+    }
 
     private void CarMovementHandler()
     {
