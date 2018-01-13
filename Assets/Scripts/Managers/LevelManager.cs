@@ -20,7 +20,7 @@ public class LevelManager : InjectorBase<LevelManager>
     private CargoManager _cargoManager;
 
     [Inject]
-    private CarEngine _carEngine;
+    private CarController _carController;
 
     #endregion
 
@@ -67,10 +67,10 @@ public class LevelManager : InjectorBase<LevelManager>
 
     private void Start()
     {
-        if(_carEngine) 
+        if(_carController) 
         {
-            _carStartPosition = _carEngine.transform.position;
-            _carStartRotation = _carEngine.transform.rotation;
+            _carStartPosition = _carController.transform.position;
+            _carStartRotation = _carController.transform.rotation;
         }
 
         if (_stateManager) _stateManager.OnStateChanged += OnStateChanged;
@@ -112,10 +112,10 @@ public class LevelManager : InjectorBase<LevelManager>
     {
         if(_stateManager) _stateManager.SetState(GameState.Play);
 
-        if(_carEngine) 
+        if(_carController) 
         {
-            _carEngine.transform.position = _carStartPosition;
-            _carEngine.transform.rotation = _carStartRotation;
+            _carController.transform.position = _carStartPosition;
+            _carController.transform.rotation = _carStartRotation;
         }
 
         if(_timer) _timer.ON();
@@ -124,7 +124,7 @@ public class LevelManager : InjectorBase<LevelManager>
 
     private void OnRestartLevelClick ()
     {
-        if(_carEngine) _carEngine.Dispose();
+        if(_carController) _carController.Dispose();
         if(_timer) _timer.OFF();
         if(_stateManager) _stateManager.SetState(GameState.None);
 

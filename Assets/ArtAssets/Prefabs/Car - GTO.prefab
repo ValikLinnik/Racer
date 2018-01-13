@@ -68,7 +68,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4782929046234434}
-  - component: {fileID: 114526334988473260}
   m_Layer: 0
   m_Name: WheelRR
   m_TagString: Untagged
@@ -232,6 +231,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4492419821203216}
+  - component: {fileID: 114380927196237420}
   m_Layer: 0
   m_Name: Wheels
   m_TagString: Untagged
@@ -280,7 +280,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4453531360554632}
-  - component: {fileID: 114992489855361794}
   m_Layer: 0
   m_Name: WheelFR
   m_TagString: Untagged
@@ -395,6 +394,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4071765581211834}
   - component: {fileID: 54847352508656846}
+  - component: {fileID: 114257865620250956}
   - component: {fileID: 114708564959249684}
   - component: {fileID: 82333107167574736}
   m_Layer: 0
@@ -445,7 +445,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4758027705935102}
-  - component: {fileID: 114100791457899692}
   m_Layer: 0
   m_Name: WheelRL
   m_TagString: Untagged
@@ -540,7 +539,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4728919002605826}
-  - component: {fileID: 114844723212708328}
   m_Layer: 0
   m_Name: WheelFL
   m_TagString: Untagged
@@ -598,8 +596,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1696239398877094}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -15.19, y: 0.91, z: 14.8}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.16, y: 0.91, z: 26.97}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4016158480342704}
@@ -1579,9 +1577,9 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 2
   m_Convex: 1
-  m_CookingOptions: 14
+  m_InflateMesh: 0
   m_SkinWidth: 0.01
   m_Mesh: {fileID: 4300000, guid: c3becaac5f1793241bed4839475b0838, type: 3}
 --- !u!82 &82333107167574736
@@ -1595,7 +1593,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: a871290734dd92e49b5a4f0dfbd88fff, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.56
+  m_Volume: 0.08
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -1676,18 +1674,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _states: 0100000003000000
---- !u!114 &114100791457899692
+--- !u!114 &114257865620250956
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1822445783361550}
+  m_GameObject: {fileID: 1696239398877094}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a1817d865e4b495ebef96a87b8def65, type: 3}
+  m_Script: {fileID: 11500000, guid: 2f2c0ef878d474baeac4d92ba742ae41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _targetWheel: {fileID: 146259564333449596}
+  _engine: {fileID: 114708564959249684}
+  _wheelsController: {fileID: 114380927196237420}
+  _isFourWheelDrive: 1
 --- !u!114 &114307881461051742
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1701,6 +1701,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _positionTarget: {fileID: 0}
   _rotationSpeed: 1
+--- !u!114 &114380927196237420
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1322024530352828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c1ef6fdad1e44bb0a523367b8cdfe1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _maxSteerAngle: 3
+  _wheelFL:
+    _wheelCollider: {fileID: 146747861067267972}
+    _modelTransform: {fileID: 4728919002605826}
+  _wheelFR:
+    _wheelCollider: {fileID: 146266935111043032}
+    _modelTransform: {fileID: 4453531360554632}
+  _wheelBL:
+    _wheelCollider: {fileID: 146259564333449596}
+    _modelTransform: {fileID: 4758027705935102}
+  _wheelBR:
+    _wheelCollider: {fileID: 146061157125901560}
+    _modelTransform: {fileID: 4782929046234434}
 --- !u!114 &114459066318650008
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1713,18 +1737,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _states: 0100000003000000
---- !u!114 &114526334988473260
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1085362921565962}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a1817d865e4b495ebef96a87b8def65, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _targetWheel: {fileID: 146061157125901560}
 --- !u!114 &114692974915112272
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1749,16 +1761,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94ceab6e082c24b47bb3462d5ad6b5e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _wheelsController: {fileID: 114380927196237420}
   _rigidbody: {fileID: 54847352508656846}
-  _maxSteerAngle: 3
   _timeToReach100: 10
   _maxSpeed: 300
   _maxTorque: 579
   _centerOfMass: {fileID: 4807443519155690}
-  _wheelFL: {fileID: 146747861067267972}
-  _wheelFR: {fileID: 146266935111043032}
-  _wheelBR: {fileID: 146061157125901560}
-  _wheelBL: {fileID: 146259564333449596}
   _torqueCurve:
     serializedVersion: 2
     m_Curve:
@@ -1777,33 +1785,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
-  _isFourWheelDrive: 1
   _engineDefault: {fileID: 8300000, guid: a871290734dd92e49b5a4f0dfbd88fff, type: 3}
   _onSpeedUp: {fileID: 8300000, guid: d6fad8e44d8100741817291b9ab6f54d, type: 3}
---- !u!114 &114844723212708328
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1987208956159960}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a1817d865e4b495ebef96a87b8def65, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _targetWheel: {fileID: 146747861067267972}
---- !u!114 &114992489855361794
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1414416801795094}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a1817d865e4b495ebef96a87b8def65, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _targetWheel: {fileID: 146266935111043032}
 --- !u!146 &146061157125901560
 WheelCollider:
   m_ObjectHideFlags: 1

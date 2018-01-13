@@ -2,20 +2,20 @@
 using UnityEngine;
 using Injection;
 
-public class CarEngine : InjectorBase<CarEngine>, IDisposable
+public class CarEngine : MonoBehaviour, IDisposable
 {
     #region SERIALIZE FIELDS
 
     [SerializeField]
-    private Rigidbody _rigidbody;
+    private WheelsController _wheelsController;
 
-    [SerializeField, Range(0, 100)]
-    private float _maxSteerAngle = 45f;
+    [SerializeField]
+    private Rigidbody _rigidbody;
 
     [SerializeField, Range(0, 30)]
     private float _timeToReach100 = 10f;
 
-    [SerializeField, Range(0, 300)]
+    [SerializeField, Range(0, 500)]
     public float _maxSpeed = 190;
 
     [SerializeField, Range(0, 1000), Tooltip("Max torque")]
@@ -25,22 +25,7 @@ public class CarEngine : InjectorBase<CarEngine>, IDisposable
     private Transform _centerOfMass;
 
     [SerializeField]
-    private WheelCollider _wheelFL;
-
-    [SerializeField]
-    private WheelCollider _wheelFR;
-
-    [SerializeField]
-    private WheelCollider _wheelBR;
-
-    [SerializeField]
-    private WheelCollider _wheelBL;
-
-    [SerializeField]
     private AnimationCurve _torqueCurve;
-
-    [SerializeField]
-    private bool _isFourWheelDrive;
 
     [SerializeField]
     private AudioClip _engineDefault;
@@ -50,7 +35,34 @@ public class CarEngine : InjectorBase<CarEngine>, IDisposable
 
     #endregion
 
+    public EngineGear EngineGear
+    {
+        get
+        {
+            return _currentGear;
+        }
+        set
+        {
+            _currentGear = value;
+        }
+    }
+
     #region PRIVATE FIELDS
+
+    private bool _isFourWheelDrive;
+    public bool IsFourWheelDrive
+    {
+        get
+        {
+            return _isFourWheelDrive;
+        }
+
+        set
+        {
+            _isFourWheelDrive = value;
+        }
+    }
+
 
     private float _currentSpeed;
     private float _wheelConstant;
@@ -59,7 +71,20 @@ public class CarEngine : InjectorBase<CarEngine>, IDisposable
     private float _timeEventDriveWasPressed = -1;
     private EngineGear _currentGear = EngineGear.N;
     private bool _isBreaking;
-    private float _brakingTorque = 500;
+
+    public bool IsBreaking
+    {
+        get
+        {
+            return _isBreaking;
+        }
+
+        set
+        {
+            _isBreaking = value;
+        }
+    }
+
     private AudioSource _engineSounSource;
 
     private AudioSource _engineSounSourceProp
@@ -102,44 +127,7 @@ public class CarEngine : InjectorBase<CarEngine>, IDisposable
     private void Start()
     {
         if (_centerOfMass && _rigidbody) _rigidbody.centerOfMass = _centerOfMass.localPosition;
-        if (_wheelFL) _wheelConstant = 2 * Mathf.PI * _wheelFL.radius * 60;
-    }
-
-    /// <summary>
-    /// Sorry about this. I know, I need InputManager.
-    /// </summary>
-    private void LateUpdate()
-    {
-        _isBreaking = Input.GetKey(KeyCode.Space);
-            
-        var forward = Input.GetKeyDown(KeyCode.UpArrow);
-        var backward = Input.GetKeyDown(KeyCode.DownArrow);
-
-        if (forward || backward)
-        {
-            _timeDrivePressed = 0;
-            _timeEventDriveWasPressed = Time.time;
-            _currentGear = backward ? EngineGear.R : EngineGear.D;
-            OnSpeedUpStart();
-            return;
-        }
-
-        forward = Input.GetKey(KeyCode.UpArrow);
-        backward = Input.GetKey(KeyCode.DownArrow);
-
-        if (forward || backward)
-        {
-            if (_timeEventDriveWasPressed == -1)
-                _timeEventDriveWasPressed = Time.time;
-            _timeDrivePressed = Time.time - _timeEventDriveWasPressed;
-            _currentGear = backward ? EngineGear.R : EngineGear.D;
-        }
-        else
-        {
-            _timeDrivePressed = -1;
-            _timeEventDriveWasPressed = -1;
-            OnSpeedUpEnd();
-        }
+        if (_wheelsController) _wheelConstant = 2 * Mathf.PI * _wheelsController.Radius * 60;
     }
 
     private void FixedUpdate()
@@ -177,38 +165,36 @@ public class CarEngine : InjectorBase<CarEngine>, IDisposable
 
     private void CarMovementHandler()
     {
-        if(!_wheelFL || !_wheelFR || !_wheelBR || !_wheelBL) throw new NullReferenceException("All wheels colliders have to be attached.");
+        if(!_wheelsController || !_wheelsController.IsWheelsReady) throw new NullReferenceException("_wheelsController is null.");
 
-        var newSteer = Input.GetAxis("Horizontal");
-
-        newSteer *= _maxSteerAngle;
-
-        _wheelFL.steerAngle = newSteer;
-        _wheelFR.steerAngle = newSteer;
-
-        if (_isFourWheelDrive) 
-        {
-            _wheelBR.steerAngle = -newSteer;
-            _wheelBL.steerAngle = -newSteer;
-        }
-
-        _currentSpeed = _wheelConstant * _wheelFL.rpm / 1000;
+        _currentSpeed = _wheelConstant * _wheelsController.RPM / 1000;
         _torque = Torque;
+        _wheelsController.Torque(_torque);
+    }
 
-        if (_wheelFL.motorTorque != _torque) _wheelFL.motorTorque = _torque;
-        if (_wheelFR.motorTorque != _torque) _wheelFR.motorTorque = _torque;
+    #endregion
 
-        if (!_isFourWheelDrive)
-        {
-            if (_wheelBL.motorTorque != _torque) _wheelBL.motorTorque = _torque;
-            if (_wheelBR.motorTorque != _torque) _wheelBR.motorTorque = _torque;
-        }
+    #region PUBLIC METHODS
 
-        var val = _isBreaking ? _brakingTorque : 0;
-        if (_wheelFL.brakeTorque != val) _wheelFL.brakeTorque = val;
-        if (_wheelFR.brakeTorque != val) _wheelFR.brakeTorque = val;
-        if (_wheelBL.brakeTorque != val) _wheelBL.brakeTorque = val;
-        if (_wheelBR.brakeTorque != val) _wheelBR.brakeTorque = val;
+    public void OnGazDown()
+    {
+        _timeDrivePressed = 0;
+        _timeEventDriveWasPressed = Time.time;
+        OnSpeedUpStart();
+    }
+
+    public void OnGaz()
+    {
+        if (_timeEventDriveWasPressed == -1)
+            _timeEventDriveWasPressed = Time.time;
+        _timeDrivePressed = Time.time - _timeEventDriveWasPressed;
+    }
+
+    public void OnGazUp()
+    {
+        _timeDrivePressed = -1;
+        _timeEventDriveWasPressed = -1;
+        OnSpeedUpEnd();
     }
 
     #endregion
@@ -218,32 +204,6 @@ public class CarEngine : InjectorBase<CarEngine>, IDisposable
     public void Dispose()
     {
         if(_rigidbody) _rigidbody.velocity = Vector3.zero;
-
-        if (_wheelFL) 
-        {
-            _wheelFL.brakeTorque = float.MaxValue;
-            _wheelFL.motorTorque = 0;
-        }
-
-        if (_wheelFR) 
-        {
-            _wheelFR.brakeTorque = float.MaxValue;
-            _wheelFR.motorTorque = 0;
-        }
-
-        if (_wheelBL) 
-        {
-            _wheelBL.brakeTorque = float.MaxValue;
-            _wheelBL.motorTorque = 0;
-        }
-
-        if (_wheelBR) 
-        {
-            _wheelBR.brakeTorque = float.MaxValue;
-            _wheelBR.motorTorque = 0;
-        }
-
-        _isBreaking = false;
         _currentGear = EngineGear.N;
     }
 
