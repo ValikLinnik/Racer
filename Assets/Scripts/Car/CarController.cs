@@ -3,9 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Injection;
+using Game.Data;
 
 public class CarController : InjectorBase<CarController>, IDisposable 
 {
+
+    [Inject]    
+    private StateManager _stateManager;
+
     #region SERIALIZE FIELDS
 
     [SerializeField]
@@ -23,6 +28,8 @@ public class CarController : InjectorBase<CarController>, IDisposable
 
     private bool _isBreaking;
     private float _brakingTorque = 500;
+    private Vector3 _carStartPosition;
+    private Quaternion _carStartRotation;
 
     #endregion
 
@@ -32,6 +39,15 @@ public class CarController : InjectorBase<CarController>, IDisposable
     {
         if(_wheelsController) _wheelsController.IsFourWheelDrive = _isFourWheelDrive;      
         if(_engine) _engine.IsFourWheelDrive = _isFourWheelDrive;
+
+        _carStartPosition = transform.position;
+        _carStartRotation = transform.rotation;
+
+        if(_stateManager)
+        {
+            _stateManager.OnStateChanged += OnStateChanged;
+            OnStateChanged(_stateManager.CurrentState, _stateManager.CurrentState);
+        }
     }
 
     private void LateUpdate()
@@ -73,7 +89,21 @@ public class CarController : InjectorBase<CarController>, IDisposable
         CarMovementHandler();
     }
 
+    private void OnDestroy()
+    {
+        if(_stateManager)
+        {
+            _stateManager.OnStateChanged -= OnStateChanged;
+        }
+    }
+
     #endregion
+
+    private void OnStateChanged (GameState current, GameState previous)
+    {
+        if(current == GameState.Play) OnStartLevel();
+        if(current == GameState.None) Dispose();
+    }
 
     private void CarMovementHandler()
     {
@@ -85,6 +115,12 @@ public class CarController : InjectorBase<CarController>, IDisposable
         _wheelsController.Break(val);
     }
 	
+    private void OnStartLevel()
+    {
+        transform.position = _carStartPosition;
+        transform.rotation = _carStartRotation;
+    }
+
     #region IDisposable implementation
     public void Dispose()
     {

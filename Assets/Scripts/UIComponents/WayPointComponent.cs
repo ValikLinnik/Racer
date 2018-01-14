@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class WayPointComponent : MonoBehaviour 
 {
-    [SerializeField]
-    private Transform _positionTarget;
-
     [SerializeField, Range(.1f, 1f)]
     private float _rotationSpeed = 1f;
 

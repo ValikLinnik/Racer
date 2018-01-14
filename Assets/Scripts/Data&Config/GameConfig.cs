@@ -12,5 +12,7 @@ public class GameConfig
 All progress will be lost.";
     public const string PlayerTag = "Player";
     public const string GameOverText = @"YOU WON {0} STARS! 
- YOUR TIME: {1}";
+ YOUR TIME: {1}
+ YOUR BEST TIME: {2}";
+    public const int LevelCount = 3;
 }

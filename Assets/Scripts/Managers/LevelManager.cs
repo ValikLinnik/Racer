@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Injection;
+﻿using System;
 using Game.Data;
+using Injection;
+using UnityEngine;
 using UnityEngine.SceneManagement;
-using System;
 
 public class LevelManager : InjectorBase<LevelManager> 
 {	
@@ -20,11 +18,14 @@ public class LevelManager : InjectorBase<LevelManager>
     private CargoManager _cargoManager;
 
     [Inject]
-    private CarController _carController;
+    private AchievementsManager _achievementsManager;
 
     #endregion
 
     #region SERIALIZE FIELDS
+
+    [SerializeField]
+    private Level _level;
 
     [SerializeField]
     private Timer _timer;
@@ -35,6 +36,22 @@ public class LevelManager : InjectorBase<LevelManager>
     #endregion
 
     #region PUBLIC PROPERTIES
+
+    public Level Level
+    {
+        get
+        {
+            return _level;
+        }
+    }
+
+    public int LevelIndex
+    {
+        get
+        {
+            return (int)_level;
+        }
+    }
 
     public float LevelTime
     {
@@ -57,22 +74,12 @@ public class LevelManager : InjectorBase<LevelManager>
     #endregion
 
     #region PRIVATE FIELDS
-
-    private Vector3 _carStartPosition;
-    private Quaternion _carStartRotation;
-
     #endregion
 
     #region UNITY EVENTS
 
     private void Start()
     {
-        if(_carController) 
-        {
-            _carStartPosition = _carController.transform.position;
-            _carStartRotation = _carController.transform.rotation;
-        }
-
         if (_stateManager) _stateManager.OnStateChanged += OnStateChanged;
         if(_levelUIManager) 
         {
@@ -99,7 +106,7 @@ public class LevelManager : InjectorBase<LevelManager>
         Time.timeScale = 1;
     }
 
-    void OnMainMenuButtonClick ()
+    private void OnMainMenuButtonClick ()
     {
         SceneManager.LoadScene(GameConfig.MainMenuSceneName);     
     }
@@ -111,20 +118,12 @@ public class LevelManager : InjectorBase<LevelManager>
     private void StartLevel()
     {
         if(_stateManager) _stateManager.SetState(GameState.Play);
-
-        if(_carController) 
-        {
-            _carController.transform.position = _carStartPosition;
-            _carController.transform.rotation = _carStartRotation;
-        }
-
         if(_timer) _timer.ON();
         if(_cargoManager) _cargoManager.StartLevel();
     }
 
     private void OnRestartLevelClick ()
     {
-        if(_carController) _carController.Dispose();
         if(_timer) _timer.OFF();
         if(_stateManager) _stateManager.SetState(GameState.None);
 
@@ -145,11 +144,20 @@ public class LevelManager : InjectorBase<LevelManager>
         if(!_timer) return;
 
         var time = _timer.CurrentTime;
+        if(_achievementsManager) _achievementsManager.SetLevelTime(time);
         int starCount = 1;
         starCount = (time <= _levelConfig.TimeToReach3Stars) ? 3 : (time <= _levelConfig.TimeToReach2Stars) ? 2 : 1;
-        if(_levelUIManager) _levelUIManager.SetGameOverMessage(string.Format(GameConfig.GameOverText, starCount, Timer.GetFormattedTime(time)));
+        var bestTime = Timer.GetFormattedTime(_achievementsManager ? _achievementsManager.BestTime : 0);
+        if(_levelUIManager) _levelUIManager.SetGameOverMessage(string.Format(GameConfig.GameOverText, starCount, Timer.GetFormattedTime(time), bestTime));
         if(_stateManager) _stateManager.SetState(GameState.GameOver);
     }
 
     #endregion
+}
+
+public enum Level
+{
+    First = 0,
+    Second = 1,
+    Third = 2
 }
