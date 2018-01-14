@@ -35,6 +35,8 @@ public class CarEngine : MonoBehaviour, IDisposable
 
     #endregion
 
+    #region PUBLIC PROPERTIES
+
     public EngineGear EngineGear
     {
         get
@@ -47,22 +49,9 @@ public class CarEngine : MonoBehaviour, IDisposable
         }
     }
 
+    #endregion
+
     #region PRIVATE FIELDS
-
-    private bool _isFourWheelDrive;
-    public bool IsFourWheelDrive
-    {
-        get
-        {
-            return _isFourWheelDrive;
-        }
-
-        set
-        {
-            _isFourWheelDrive = value;
-        }
-    }
-
 
     private float _currentSpeed;
     private float _wheelConstant;

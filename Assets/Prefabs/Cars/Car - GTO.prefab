@@ -561,8 +561,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1696239398877094}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -15.19, y: 0.91, z: 14.8}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.16, y: 0.91, z: 26.97}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4016158480342704}
@@ -1608,7 +1608,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c1ef6fdad1e44bb0a523367b8cdfe1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxSteerAngle: 4
+  _maxSteerAngle: 3.5
   _wheelFL:
     _wheelCollider: {fileID: 146747861067267972}
     _modelTransform: {fileID: 4728919002605826}

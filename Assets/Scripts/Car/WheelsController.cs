@@ -111,11 +111,11 @@ public class WheelsController : MonoBehaviour , IDisposable
         _wheelFL.WheelColl.motorTorque = torque;
         _wheelFR.WheelColl.motorTorque = torque;
 
-        if (!_isFourWheelDrive)
-        {
-            _wheelBL.WheelColl.motorTorque = torque;
-            _wheelBR.WheelColl.motorTorque = torque;
-        }
+//        if (!_isFourWheelDrive)
+//        {
+//            _wheelBL.WheelColl.motorTorque = torque;
+//            _wheelBR.WheelColl.motorTorque = torque;
+//        }
     }
 
     public void Break(float val)

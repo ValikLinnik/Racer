@@ -1,15 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using System;
-using Injection;
+﻿using System;
 using Game.Data;
+using Injection;
+using UnityEngine;
 
 public class CarController : InjectorBase<CarController>, IDisposable 
 {
+    #region INJECTED FIELDS
 
     [Inject]    
     private StateManager _stateManager;
+
+    #endregion
 
     #region SERIALIZE FIELDS
 
@@ -38,7 +39,6 @@ public class CarController : InjectorBase<CarController>, IDisposable
     private void Start()
     {
         if(_wheelsController) _wheelsController.IsFourWheelDrive = _isFourWheelDrive;      
-        if(_engine) _engine.IsFourWheelDrive = _isFourWheelDrive;
 
         _carStartPosition = transform.position;
         _carStartRotation = transform.rotation;

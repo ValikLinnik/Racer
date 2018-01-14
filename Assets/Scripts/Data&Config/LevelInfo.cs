@@ -1,6 +1,4 @@
-﻿using System;
-using NUnit.Framework;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 public class LevelInfo : OverrodeOperator
 {
