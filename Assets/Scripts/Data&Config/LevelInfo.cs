@@ -1,18 +1,13 @@
 ﻿using System.Collections.Generic;
+using System;
 
+[Serializable]
 public class LevelInfo : OverrodeOperator
 {
-    public float BestTime
-    {
-        get;
-        set;
-    }
+    public float BestTime;
 
-    public List<RaceSnapshot> BestRace
-    {
-        get;
-        set;
-    }
+    public List<RaceSnapshot> BestRace;
+
 }
 
 

@@ -1,14 +1,17 @@
 ﻿using UnityEngine;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 public class DataManager : MonoBehaviour
 {	
     #region PRIVATE FIELDS
 
     private PlayerInfo _playerInfo;
+    private string _path = "/Data/info";
 
     #endregion
 
-    #region PRIVATE FIELDS
+    #region STATIC FIELDS
 
     private static DataManager _instance;
 
@@ -44,12 +47,18 @@ public class DataManager : MonoBehaviour
     public PlayerInfo GetInfo()
     {
         if (!_playerInfo) LoadInfo();
+        if(_playerInfo.LevelInfo.IsNullOrEmpty()) _playerInfo.LevelInfo = new LevelInfo[GameConfig.LevelCount];
         return _playerInfo;
     }
 
     public void SaveInfo()
     {
-        Debug.LogFormat("<size=18><color=olive>{0}</color></size>", "save data");
+        var formatter = new BinaryFormatter();
+
+        using(var stream = new FileStream(Application.dataPath + _path, FileMode.Create, FileAccess.Write, FileShare.None))
+        {
+            formatter.Serialize(stream, _playerInfo);
+        }
     }
 
     #endregion
@@ -58,8 +67,18 @@ public class DataManager : MonoBehaviour
 
     private void LoadInfo()
     {
-        Debug.LogFormat("<size=18><color=olive>{0}</color></size>", "load data");
-        _playerInfo = new PlayerInfo();
+        if(!File.Exists(Application.dataPath + _path))
+        {
+            _playerInfo = new PlayerInfo();
+            return;
+        }
+
+        var formatter = new BinaryFormatter();
+
+        using(var stream = new FileStream(Application.dataPath + _path, FileMode.Open, FileAccess.Read, FileShare.Read))
+        {
+            _playerInfo = formatter.Deserialize(stream) as PlayerInfo;
+        }
     }
 
     #endregion

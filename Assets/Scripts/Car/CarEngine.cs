@@ -56,7 +56,7 @@ public class CarEngine : MonoBehaviour, IDisposable
     private float _currentSpeed;
     private float _wheelConstant;
     private float _torque;
-    private float _timeDrivePressed = 1;
+    private float _timeDrivePressed = -1;
     private float _timeEventDriveWasPressed = -1;
     private EngineGear _currentGear = EngineGear.N;
     private bool _isBreaking;
