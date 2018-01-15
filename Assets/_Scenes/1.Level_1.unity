@@ -661,6 +661,12 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 48b3af7f97e224e259731474ffeb03d8, type: 2}
   m_IsPrefabParent: 0
+--- !u!114 &174470136 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114346061277285970, guid: 48b3af7f97e224e259731474ffeb03d8,
+    type: 2}
+  m_PrefabInternal: {fileID: 174470135}
+  m_Script: {fileID: 11500000, guid: e9a33a27d60ee4039b938d47e08ff4f1, type: 3}
 --- !u!1001 &190026468
 Prefab:
   m_ObjectHideFlags: 0
@@ -1099,7 +1105,7 @@ MonoBehaviour:
   - {fileID: 1302297880}
   - {fileID: 1547391317}
   _animationArrow: {fileID: 246188377}
-  _wayPointComponent: {fileID: 0}
+  _wayPointComponent: {fileID: 174470136}
 --- !u!114 &406815030
 MonoBehaviour:
   m_ObjectHideFlags: 0
