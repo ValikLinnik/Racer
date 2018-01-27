@@ -21,14 +21,22 @@ public class CarController : InjectorBase<CarController>, IDisposable
     private WheelsController _wheelsController;
 
     [SerializeField]
+    private Rigidbody _rigidbody;
+
+    [SerializeField]
+    private Transform _centerOfMass;
+
+    [SerializeField]
     private bool _isFourWheelDrive;
+
+    [SerializeField,Range(0,30000)]
+    private float _brakingTorque = 30000;
 
     #endregion
 
     #region PRIVATE FIELDS
 
     private bool _isBreaking;
-    private float _brakingTorque = 500;
     private Vector3 _carStartPosition;
     private Quaternion _carStartRotation;
 
@@ -38,7 +46,13 @@ public class CarController : InjectorBase<CarController>, IDisposable
 
     private void Start()
     {
-        if(_wheelsController) _wheelsController.IsFourWheelDrive = _isFourWheelDrive;      
+        if(_wheelsController) 
+        {
+            _wheelsController.IsFourWheelDrive = _isFourWheelDrive;  
+            _wheelsController.CarBody = _rigidbody;
+        }
+
+        if (_centerOfMass && _rigidbody) _rigidbody.centerOfMass = _centerOfMass.localPosition;
 
         _carStartPosition = transform.position;
         _carStartRotation = transform.rotation;
@@ -99,32 +113,35 @@ public class CarController : InjectorBase<CarController>, IDisposable
 
     #endregion
 
-    private void OnStateChanged (GameState current, GameState previous)
+    #region PRIVATE METHODS
+
+    private void OnStateChanged(GameState current, GameState previous)
     {
-        if(current == GameState.Play) OnStartLevel();
-        if(current == GameState.None) Dispose();
+        if (current == GameState.Play) OnStartLevel();
+        if (current == GameState.GameOver) Dispose();
     }
 
     private void CarMovementHandler()
     {
-        if(!_wheelsController || !_wheelsController.IsWheelsReady) throw new NullReferenceException("WheelsController is null.");
-
-        var newSteer = Input.GetAxis("Horizontal");
-        _wheelsController.CarMovementHandler(newSteer);
+        if (!_wheelsController || !_wheelsController.IsWheelsReady) throw new NullReferenceException("WheelsController is null.");
+        _wheelsController.CarMovementHandler(Input.GetAxis("Horizontal"));
         var val = _isBreaking ? _brakingTorque : 0;
         _wheelsController.Break(val);
     }
-	
+
     private void OnStartLevel()
     {
         transform.position = _carStartPosition;
         transform.rotation = _carStartRotation;
     }
 
+    #endregion
+
     #region IDisposable implementation
     public void Dispose()
     {
         _isBreaking = false;
+        if(_rigidbody) _rigidbody.velocity = Vector3.zero;
         if(_engine) _engine.Dispose();
         if(_wheelsController) _wheelsController.Dispose();
     }

@@ -9,20 +9,14 @@ public class CarEngine : MonoBehaviour, IDisposable
     [SerializeField]
     private WheelsController _wheelsController;
 
-    [SerializeField]
-    private Rigidbody _rigidbody;
-
     [SerializeField, Range(0, 30)]
     private float _timeToReach100 = 10f;
 
-    [SerializeField, Range(0, 500)]
+    [SerializeField, Range(0, 1000)]
     public float _maxSpeed = 190;
 
     [SerializeField, Range(0, 1000), Tooltip("Max torque")]
     private float _maxTorque = 300;
-
-    [SerializeField]
-    private Transform _centerOfMass;
 
     [SerializeField]
     private AnimationCurve _torqueCurve;
@@ -49,18 +43,6 @@ public class CarEngine : MonoBehaviour, IDisposable
         }
     }
 
-    #endregion
-
-    #region PRIVATE FIELDS
-
-    private float _currentSpeed;
-    private float _wheelConstant;
-    private float _torque;
-    private float _timeDrivePressed = -1;
-    private float _timeEventDriveWasPressed = -1;
-    private EngineGear _currentGear = EngineGear.N;
-    private bool _isBreaking;
-
     public bool IsBreaking
     {
         get
@@ -74,20 +56,18 @@ public class CarEngine : MonoBehaviour, IDisposable
         }
     }
 
+    #endregion
+
+    #region PRIVATE FIELDS
+
+    private float _currentSpeed;
+    private float _wheelConstant;
+    private float _torque;
+    private float _timeDrivePressed = -1;
+    private float _timeEventDriveWasPressed = -1;
+    private EngineGear _currentGear = EngineGear.N;
+    private bool _isBreaking;
     private AudioSource _engineSounSource;
-
-    private AudioSource _engineSounSourceProp
-    {
-        get
-        {
-            if (!_engineSounSource)
-            {
-                _engineSounSource = GetComponent<AudioSource>();
-            }
-
-            return _engineSounSource;
-        }
-    }
 
     #endregion
 
@@ -109,13 +89,25 @@ public class CarEngine : MonoBehaviour, IDisposable
         }
     }
 
+    private AudioSource _engineSounSourceProp
+    {
+        get
+        {
+            if (!_engineSounSource)
+            {
+                _engineSounSource = GetComponent<AudioSource>();
+            }
+
+            return _engineSounSource;
+        }
+    }
+
     #endregion
 
     #region UNITY EVENTS
 
     private void Start()
     {
-        if (_centerOfMass && _rigidbody) _rigidbody.centerOfMass = _centerOfMass.localPosition;
         if (_wheelsController) _wheelConstant = 2 * Mathf.PI * _wheelsController.Radius * 60;
     }
 
@@ -126,9 +118,9 @@ public class CarEngine : MonoBehaviour, IDisposable
 
     private void OnGUI()
     {
-        GUI.Button(new Rect(10, 10, 100, 50), _currentSpeed.ToString("F"));
-        GUI.Button(new Rect(10, 60, 100, 50), _torque.ToString("F"));
-        GUI.Button(new Rect(10, 110, 100, 50), _currentGear.ToString());
+        GUI.Box(new Rect(10, 10, 100, 50), _currentSpeed.ToString("F"));
+        GUI.Box(new Rect(10, 60, 100, 50), _torque.ToString("F"));
+        GUI.Box(new Rect(10, 110, 100, 50), _wheelsController.RPM.ToString("##.###"));
     }
 
     #endregion
@@ -192,7 +184,6 @@ public class CarEngine : MonoBehaviour, IDisposable
 
     public void Dispose()
     {
-        if(_rigidbody) _rigidbody.velocity = Vector3.zero;
         _currentGear = EngineGear.N;
     }
 
